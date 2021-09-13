@@ -1,0 +1,20 @@
+globals:
+  airport_icao: KCLT
+  category_exclusions:
+    arrival_runway_actual: ['23','05','5','10L']
+  start_time: 2020-05-15 08:00:00
+  end_time: 2020-07-25 08:00:00
+  # If test_set_start_time not a valid datetime, then use random train-test
+  # split by default instead
+  test_set_start_time: 2020-05-15 08:00:00  # All test when validating
+  fuser_db_credentials: fuser_db_credentials
+  validate:
+    default: get_most_recent_registered_model
+    impeded_taxi_in_AMA:
+      run_id: run_id_for_already_mlflow_logged_model1
+    impeded_taxi_in_ramp:
+      run_id: run_id_for_already_mlflow_logged_model2
+    unimpeded_taxi_in_AMA:
+      run_id: run_id_for_already_mlflow_logged_model3
+    unimpeded_taxi_in_ramp:
+      run_id: run_id_for_already_mlflow_logged_model4

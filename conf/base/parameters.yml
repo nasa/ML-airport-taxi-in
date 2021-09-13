@@ -1,0 +1,152 @@
+# Copy of globals to facilitate access
+globals: ${globals}
+
+TEST_SIZE: 0.2  # fraction for test set
+RANDOM_SEED: 1234
+
+UNIMPEDED_AMA_IF_SPEED_GTE: 4  # knots
+# UNIMPEDED_AMA_FRACTION_GTE is the fraction of ASDE-X messages that
+# must have speed greater than or equal to UNIMPEDED_AMA_IF_SPEED_GTE
+# to qualify as unimpeded in the AMA
+UNIMPEDED_AMA_FRACTION_GTE: 1.0
+
+ntx_connection:
+  host: XXXXX
+  port: XXXXX
+  username: XXXXX
+
+
+# ------------ Unimpeded ramp model configuration
+# Features and options to be excluded (if relevant)
+unimp_ramp_model_params:
+  name: unimp_ramp_GBR
+  label: ramp
+  target: actual_arrival_ramp_taxi_time
+  features: [arrival_stand_actual, arrival_runway_actual,carrier]
+  features_core: [ arrival_runway_actual, arrival_stand_actual ]
+  OneHotEncoder_features: [arrival_runway_actual,carrier]
+  model: GradientBoostingRegressor
+  model_params:
+    n_estimators: 1000
+    min_samples_split: 10
+    min_samples_leaf: 2
+    max_features: sqrt
+    random_state: 0
+    loss: quantile
+    alpha: 0.2
+  metrics: [tilted_loss, fraction_less_than_actual]
+  baseline:
+    group_by_features: [arrival_runway_actual]
+    group_by_agg:
+      metric: quantile
+      param: 0.2
+  unit_tests:
+    target_min: 0
+    target_type: float
+    target_scale: 0
+    target_min_valid_ratio : 0.99
+  mlflow:
+    tracking_uri: XXXXX
+    experiment_name: unimpeded_ramp
+    run_name: DEFAULT
+    modeler_name: NONE
+
+# ------------ Unimpeded AMA model configuration
+unimp_ama_model_params:
+  name: unimp_AMA_XGB
+  label: ama
+  target: actual_arrival_ama_taxi_time
+  unimpeded_ama_fraction_gte: 1.0
+  features: [arrival_stand_actual, arrival_runway_actual,carrier]
+  features_core: [ arrival_runway_actual, arrival_stand_actual ]
+  OneHotEncoder_features: [arrival_runway_actual,carrier]
+  model: XGBRegressor
+  model_params:
+    objective: reg:squarederror
+    colsample_bytree: 0.3
+    learning_rate: 0.1
+    max_depth: 5
+    alpha: 10
+    n_estimators: 500
+    random_state: 0
+  metrics: [mean_absolute_error, mean_absolute_percentage_error, rmse, fraction_less_than_actual]
+  baseline:
+    group_by_features: [arrival_runway_actual]
+    group_by_agg:
+      metric: quantile
+      param: 0.2
+  unit_tests:
+    target_min: 0
+    target_type: float
+    target_scale: 0
+    target_min_valid_ratio : 0.99
+  mlflow:
+    tracking_uri: XXXXX
+    experiment_name: unimpeded_ama
+    run_name: DEFAULT
+    modeler_name: NONE
+
+# ------------ Impeded AMA model configuration
+imp_ama_model_params:
+  name: impeded_ama
+  target: actual_arrival_ama_taxi_time
+  features: [carrier, aircraft_type, arrival_stand_actual, arrival_runway_actual,arr_runway_AMA_count,AMA_gate_count,dep_AMA_runway_count,dep_stand_AMA_count,gate_occupied_at_landing_proxy, total_flights_on_surface]
+  features_core: [ arrival_runway_actual, arrival_stand_actual ]
+  OneHotEncoder_features: [arrival_stand_actual,arrival_runway_actual, carrier]
+  model: RandomForestRegressor
+  model_params:
+    n_estimators: 1000
+    min_samples_split: 10
+    min_samples_leaf: 7
+    max_features: sqrt
+    n_jobs: -1
+    bootstrap: False
+    random_state: 0
+    max_depth: 20
+  metrics: [mean_absolute_percentage_error, rmse]
+  baseline:
+    group_by_features: [arrival_runway_actual]
+    group_by_agg:
+      metric: mean
+  unit_tests:
+    target_min: 0
+    target_type: float
+    target_scale: 0
+    target_min_valid_ratio : 0.99
+  mlflow:
+    tracking_uri: XXXXX
+    experiment_name: impeded_ama
+    run_name: DEFAULT
+    modeler_name: NONE
+
+# ------------ Impeded ramp model configuration
+imp_ramp_model_params:
+  name: impeded_ramp
+  target: actual_arrival_ramp_taxi_time
+  features: [aircraft_type, arrival_stand_actual, arrival_runway_actual, carrier, AMA_gate_count, gate_occupied_at_landing_proxy, total_flights_on_surface]
+  features_core: [ arrival_runway_actual, arrival_stand_actual ]
+  OneHotEncoder_features: [arrival_runway_actual, carrier, arrival_stand_actual]
+  model: GradientBoostingRegressor
+  model_params:
+    n_estimators: 1000
+    min_samples_split: 10
+    min_samples_leaf: 2
+    max_features: sqrt
+    random_state: 0
+    loss: quantile
+    alpha: 0.5
+  metrics: [mean_absolute_error, mean_absolute_percentage_error, rmse]
+  baseline:
+    group_by_features: [arrival_runway_actual]
+    group_by_agg:
+      metric: mean
+  unit_tests:
+    target_min: 0
+    target_type: float
+    target_scale: 0
+    target_min_valid_ratio : 0.99
+  mlflow:
+    tracking_uri: XXXXX
+    experiment_name: impeded_ramp
+    run_name: DEFAULT
+    modeler_name: NONE

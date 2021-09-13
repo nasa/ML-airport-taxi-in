@@ -1,0 +1,148 @@
+MFS_data_set@DB:
+  credentials: ${globals.fuser_db_credentials}
+  load_args:
+    chunk_size_days: 5
+    params:
+      airport_icao: ${globals.airport_icao}
+      end_time: ${globals.end_time}
+      start_time: ${globals.start_time}
+  sqlfilepath: src/taxi_in/pipelines/data_query_and_save/SQL/matm_flight_summary_query.sql
+  type: data_services.kedro_extensions.io.SQLQueryFileChunkedDataSetMultiCon
+  airport: ${globals.airport_icao}
+
+MFS_data_set@CSV:
+  filepath: data/01_raw/${globals.airport_icao}.MFS_data_set.csv
+  load_args:
+    parse_dates:
+    - departure_stand_actual_time
+    - departure_stand_airline_time
+    - departure_runway_actual_time
+    - departure_movement_area_actual_time
+    - arrival_stand_actual_time
+    - arrival_stand_airline_time
+    - arrival_runway_actual_time
+    - arrival_movement_area_actual_time
+    low_memory: false
+    dtype:
+      arrival_runway_actual: str
+  type: pandas.CSVDataSet
+  versioned: false
+
+fraction_speed_gte_threshold_data_set@DB:
+  credentials: ${globals.fuser_db_credentials}
+  load_args:
+    chunk_size_days: 10
+    params:
+      airport_icao: ${globals.airport_icao}
+      end_time: ${globals.end_time}
+      start_time: ${globals.start_time}
+      threshold_knots: 4
+  sqlfilepath: src/taxi_in/pipelines/unimpeded/data_query_and_save/SQL/fraction_speed_gte_threshold_query_asdex_extension.sql
+  type: data_services.kedro_extensions.io.SQLQueryFileChunkedDataSetMultiCon
+  airport: ${globals.airport_icao}
+
+fraction_speed_gte_threshold_data_set@CSV:
+  filepath: data/01_raw/${globals.airport_icao}.fraction_speed_gte_threshold_data_set.csv
+  type: pandas.CSVDataSet
+  versioned: false
+
+runway_actuals_data_set@DB:
+  credentials: ${globals.runways_db_credentials}
+  load_args:
+    chunk_size_days: 5
+    params:
+      airport_icao: ${globals.airport_icao}
+      end_time: ${globals.end_time}
+      start_time: ${globals.start_time}
+  sqlfilepath: src/taxi_in/pipelines/data_query_and_save/SQL/runway_actuals.sql
+  type: data_services.kedro_extensions.io.SQLQueryFileChunkedDataSetMultiCon
+  airport: ${globals.airport_icao}
+
+runway_actuals_data_set@CSV:
+  filepath: data/01_raw/${globals.airport_icao}.runway_actuals_data_set.csv
+  load_args:
+    parse_dates:
+    - departure_runway_actual_time
+    - arrival_runway_actual_time
+    dtype:
+      arrival_runway_actual: str
+  type: pandas.CSVDataSet
+  versioned: false
+
+ffs_data_set@DB:
+  credentials: ${globals.STBO_data_credentials}
+  load_args:
+    chunk_size_days: 30
+    params:
+      end_time: ${globals.end_time}
+      start_time: ${globals.start_time}
+  sqlfilepath: src/taxi_in/pipelines/unimpeded/data_query_and_save/SQL/ffs_asdex_query_${globals.airport_icao}.sql
+  type: data_services.kedro_extensions.io.SQLQueryFileChunkedDataSetMultiCon
+  airport : ${globals.airport_icao}
+
+ffs_data_set@CSV:
+  filepath: data/01_raw/${globals.airport_icao}.ffs_data_set.csv
+  type: data_services.kedro_extensions.io.CSVDataSetEmpty
+  versioned: false
+
+############# Features Data set ###############################################
+airline_taxi_in_predictions_data_set@DB:
+  credentials: ${globals.fuser_db_credentials}
+  load_args:
+    chunk_size_days: 5
+    params:
+      airport_icao: ${globals.airport_icao}
+      end_time: ${globals.end_time}
+      start_time: ${globals.start_time}
+  sqlfilepath: src/taxi_in/pipelines/impeded/data_query_and_save/SQL/airline_taxi_in_time_at_landing_query.sql
+  type: data_services.kedro_extensions.io.SQLQueryFileChunkedDataSetMultiCon
+  airport: ${globals.airport_icao}
+
+airline_taxi_in_predictions_data_set@CSV:
+  filepath: data/03_primary/${globals.airport_icao}.airline_taxi_in_predictions_data_set.csv
+  load_args:
+    parse_dates:
+    - arrival_runway_actual_time
+    - timestamp
+    - arrival_runway_airline_time_at_landing
+    - arrival_stand_airline_time_at_landing
+  type: pandas.CSVDataSet
+  versioned: false
+
+scheduled_taxi_in_predictions_data_set@DB:
+  credentials: ${globals.fuser_db_credentials}
+  load_args:
+    chunk_size_days: 5
+    params:
+      airport_icao: ${globals.airport_icao}
+      end_time: ${globals.end_time}
+      start_time: ${globals.start_time}
+  sqlfilepath: src/taxi_in/pipelines/impeded/data_query_and_save/SQL/scheduled_taxi_in_time_query.sql
+  type: data_services.kedro_extensions.io.SQLQueryFileChunkedDataSetMultiCon
+  airport: ${globals.airport_icao}
+
+scheduled_taxi_in_predictions_data_set@CSV:
+  filepath: data/03_primary/${globals.airport_icao}.scheduled_taxi_in_predictions_data_set.csv
+  load_args:
+    parse_dates:
+    - source_timestamp
+    - airline_on_time
+    - airline_in_time
+  type: pandas.CSVDataSet
+  versioned: false
+
+aircrafts_classes_map@CSV:
+  filepath: data/01_raw/aircraft_type-mappings.csv
+  type: pandas.CSVDataSet
+
+
+_outcsv: &outcsv
+  type: pandas.CSVDataSet
+  versioned: false
+  save_args:
+    index: true
+  
+
+data_predicted:
+  filepath: data/02_intermediate/${globals.airport_icao}_any_interm.csv
+  <<: *outcsv
