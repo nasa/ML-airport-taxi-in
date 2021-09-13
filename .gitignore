@@ -161,9 +161,9 @@ venv.bak/
 
 # VS Code
 .vscode/
-/conf/local/
-/conf/local/
-/mlruns/
+#/conf/local/
+#/conf/local/
+#/mlruns/
 
 # pickled models
 *.pkl
