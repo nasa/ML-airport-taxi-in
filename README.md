@@ -63,8 +63,7 @@ Implementing it required us to overwrite the `_create_config_loader` method in `
 If using Kedro's Jupyter notebook or IPython integrations, the overall `globals.yml` is always used (i.e., there is not currently any way to specify which airport-specific `<airport_icao>_globals.yml` to use when initiating the Jupyter notebook session).
 The overall `globals.yml` can be updated during a Jupyter or IPython session (e.g., to specify a different airport) if, after changing the file, the `%reload_kedro` command is executed in the Jupyter notebook or IPython console session.
 This will update the Kedro `context` variable to take into account the updated `globals.yml`.
-See the "Working with Kedro from notebooks or IPython" section below and the [relevant Kedro documentation]
-(https://kedro.readthedocs.io/en/stable/11_tools_integration/02_ipython.html) for additional information about Kedro's Jupyter and IPython capabilities.
+See the "Working with Kedro from notebooks or IPython" section below and the [relevant Kedro documentation](https://kedro.readthedocs.io/en/stable/11_tools_integration/02_ipython.html) for additional information about Kedro's Jupyter and IPython capabilities.
 
 *Parameters*
 
@@ -241,7 +240,7 @@ And if you want to run an IPython session:
 kedro ipython
 ```
 
-Staring Jupyter or IPython this way executes a startup script in `.ipython/profile_default/startup/00-kedro-init.py`.
+Starting Jupyter or IPython this way executes a startup script in `.ipython/profile_default/startup/00-kedro-init.py`.
 This creates a Kedro `context` variable in scope; the `context` can be used to access the data catalog, parameters, execute pipelines or portions thereof, and more.
 See the [relevant Kedro documentation](https://kedro.readthedocs.io/en/stable/11_tools_integration/02_ipython.html)
 for details.
