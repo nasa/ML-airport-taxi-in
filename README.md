@@ -66,19 +66,19 @@ An example of such a file is in `credentials-template.yml`.
 *Per-airport Globals*
 
 In this project, each model is trained for a particular airport.
-The airport and potentially airport-specific items are specified in `conf/base/globals.yml` or `conf/base/<airport_icao>_globals.yml`, where `<airport_icao>` is the ICAO identifier for an airport (e.g., KCLT).
+The airport and potentially airport-specific items are specified in `conf/base/globals.yml` or `conf/base/<airport_icao>.globals.yml`, where `<airport_icao>` is the ICAO identifier for an airport (e.g., KCLT).
 Which particular `globals.yml` is used is specified at run time as a parameter specified in the `kedro run` command line interfaces (described below) or the airport specific file can be copied into `globals.yml`.
 This approach is based on [Kedro's templated configurations capability](https://kedro.readthedocs.io/en/stable/04_kedro_project_setup/02_configuration.html#templating-configuration).
 Implementing it required us to overwrite the `_create_config_loader` method in `src/taxi_in/run.py` to use a [TemplatedConfigLoader](https://kedro.readthedocs.io/en/stable/kedro.config.TemplatedConfigLoader.html) in a way similar to what is described in the Kedro documentation, but extended to allow for the `global_config_yml` command line interface parameter.
 
-If using Kedro's Jupyter notebook or IPython integrations, the overall `globals.yml` is always used (i.e., there is not currently any way to specify which airport-specific `<airport_icao>_globals.yml` to use when initiating the Jupyter notebook session).
+If using Kedro's Jupyter notebook or IPython integrations, the overall `globals.yml` is always used (i.e., there is not currently any way to specify which airport-specific `<airport_icao>.globals.yml` to use when initiating the Jupyter notebook session).
 The overall `globals.yml` can be updated during a Jupyter or IPython session (e.g., to specify a different airport) if, after changing the file, the `%reload_kedro` command is executed in the Jupyter notebook or IPython console session.
 This will update the Kedro `context` variable to take into account the updated `globals.yml`.
 See the "Working with Kedro from notebooks or IPython" section below and the [relevant Kedro documentation](https://kedro.readthedocs.io/en/stable/11_tools_integration/02_ipython.html) for additional information about Kedro's Jupyter and IPython capabilities.
 
 *Parameters*
 
-The `conf/base/parameters.yml` file contains any parameters that control various aspects of the pipelines that engineer data and train and test models. This file can be airport-specific as well, and in that case the ICAO identifier will prefix the file (`<airport_icao>_parameters.yml`).
+The `conf/base/parameters.yml` file contains any parameters that control various aspects of the pipelines that engineer data and train and test models.
 The parameters file specifies, for instance, the type of machine learning model that should be used and what hyperparameters will control its training.
 You may wish to update some of these parameters.
 Items in `parameters.yml` that are surrounded by `${` and `}` will be imported from the `globals.yml`.
