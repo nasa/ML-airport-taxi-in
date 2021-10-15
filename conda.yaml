@@ -15,4 +15,4 @@ dependencies:
   - scp=0.13.2
   - pip
   - pip:
-    - data_services<1.0.2,>=1.0.1dev80
+    - git+https://github.com/nasa/ML-airport-data-services.git
