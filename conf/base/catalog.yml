@@ -54,6 +54,7 @@ runway_actuals_data_set@DB:
       airport_icao: ${globals.airport_icao}
       end_time: ${globals.end_time}
       start_time: ${globals.start_time}
+      surf_surv_avail: ${globals.surface_surveillance_available}
   sqlfilepath: src/taxi_in/pipelines/data_query_and_save/SQL/runway_actuals.sql
   type: data_services.kedro_extensions.io.SQLQueryFileChunkedDataSetMultiCon
   airport: ${globals.airport_icao}

@@ -19,6 +19,8 @@ from taxi_in.pipelines.impeded import data_engineering as imp_de
 from taxi_in.pipelines.impeded import data_science as imp_ds
 from taxi_in.pipelines.impeded import test as imp_test
 
+from data_services.conda_environment_test import check_environment
+
 def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
     """Create the project's pipeline.
 
@@ -29,6 +31,8 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
         A mapping from a pipeline name to a ``Pipeline`` object.
 
     """
+
+    check_environment()
 
     data_query_and_save_pipeline = dqs.create_pipeline()
     data_engineering_pipeline = de.create_pipeline()
